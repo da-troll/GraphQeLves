@@ -17,11 +17,11 @@ const CodeBlock = ({ code }: { code: string }) => (
   </pre>
 );
 
-const ActionButton = ({ onClick, label, icon: Icon }: { onClick: () => void, label: string, icon: any }) => {
+const ActionButton = ({ onClick, label, icon: Icon }: { onClick: () => Promise<void> | void, label: string, icon: any }) => {
   const [copied, setCopied] = useState(false);
   
-  const handleClick = () => {
-    onClick();
+  const handleClick = async () => {
+    await onClick();
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -44,8 +44,35 @@ export const DetailPane: React.FC = () => {
   const selectedEvents = events.filter(e => selectedIds.has(e.id));
   const [activeTab, setActiveTab] = useState<'headers' | 'request' | 'response' | 'raw'>('request');
 
-  const handleCopy = (text: string) => {
-    navigator.clipboard.writeText(text);
+  const handleCopy = async (text: string) => {
+    if (!text) return;
+
+    try {
+      // Try modern Async Clipboard API first
+      await navigator.clipboard.writeText(text);
+    } catch (err) {
+      console.warn("Clipboard API failed, attempting fallback...", err);
+      // Fallback: Create a temporary text area
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      
+      // Ensure it's not visible but part of the DOM
+      textArea.style.position = "fixed";
+      textArea.style.left = "-9999px";
+      textArea.style.top = "0";
+      document.body.appendChild(textArea);
+      
+      textArea.focus();
+      textArea.select();
+      
+      try {
+        document.execCommand('copy');
+      } catch (e) {
+        console.error("Fallback copy failed", e);
+      }
+      
+      document.body.removeChild(textArea);
+    }
   };
 
   const handleExport = () => {

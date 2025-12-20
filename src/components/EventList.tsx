@@ -5,11 +5,19 @@ import { NetworkEvent } from '../types';
 import { clsx } from 'clsx';
 
 const formatBytes = (bytes: number, decimals = 1) => {
-  if (bytes === 0) return '0 B';
+  // Handle invalid, zero, or negative (cached) sizes
+  if (!Number.isFinite(bytes) || bytes <= 0) return '0 B';
+  
   const k = 1024;
   const dm = decimals < 0 ? 0 : decimals;
   const sizes = ['B', 'KB', 'MB', 'GB'];
+  
   const i = Math.floor(Math.log(bytes) / Math.log(k));
+  
+  // Safety check for array bounds
+  if (i < 0) return bytes + ' B';
+  if (i >= sizes.length) return 'Large';
+
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 };
 
