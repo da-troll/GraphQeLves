@@ -4,17 +4,33 @@ import { clsx } from 'clsx';
 import { Copy, Download, Check } from 'lucide-react';
 import { generateCurl } from '../utils/curl';
 import { createExportBundle, downloadBundle } from '../utils/export';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 const JsonView = ({ data }: { data: any }) => (
-  <pre className="text-xs font-mono p-4 overflow-auto text-gray-700 dark:text-gray-300">
-    {JSON.stringify(data, null, 2)}
-  </pre>
+  <div className="text-xs overflow-auto h-full">
+    <SyntaxHighlighter
+      language="json"
+      style={vscDarkPlus}
+      customStyle={{ margin: 0, height: '100%', fontSize: '11px', lineHeight: '1.5' }}
+      wrapLongLines={true}
+    >
+      {JSON.stringify(data, null, 2)}
+    </SyntaxHighlighter>
+  </div>
 );
 
-const CodeBlock = ({ code }: { code: string }) => (
-  <pre className="text-xs font-mono p-4 overflow-auto text-gray-700 dark:text-gray-300 whitespace-pre-wrap break-all">
-    {code}
-  </pre>
+const CodeBlock = ({ code, language = 'graphql' }: { code: string, language?: string }) => (
+  <div className="text-xs overflow-auto h-full">
+    <SyntaxHighlighter
+      language={language}
+      style={vscDarkPlus}
+      customStyle={{ margin: 0, height: '100%', fontSize: '11px', lineHeight: '1.5' }}
+      wrapLongLines={true}
+    >
+      {code}
+    </SyntaxHighlighter>
+  </div>
 );
 
 const ActionButton = ({ onClick, label, icon: Icon }: { onClick: () => Promise<void> | void, label: string, icon: any }) => {
@@ -29,7 +45,7 @@ const ActionButton = ({ onClick, label, icon: Icon }: { onClick: () => Promise<v
   return (
     <button 
       onClick={handleClick}
-      className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded text-xs font-medium text-gray-700 dark:text-gray-300 transition-colors"
+      className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded text-xs font-medium text-gray-700 dark:text-gray-300 transition-colors border border-gray-200 dark:border-gray-700 shadow-sm"
     >
       {copied ? <Check size={14} className="text-green-500" /> : <Icon size={14} />}
       {copied ? 'Copied' : label}
@@ -137,7 +153,7 @@ export const DetailPane: React.FC = () => {
   return (
     <div className="flex flex-col h-full bg-white dark:bg-gray-900">
       {/* Header */}
-      <div className="border-b border-gray-200 dark:border-gray-700 px-4 py-3 flex justify-between items-start gap-4">
+      <div className="border-b border-gray-200 dark:border-gray-700 px-4 py-3 flex justify-between items-start gap-4 flex-shrink-0">
          <div className="min-w-0">
            <h1 className="font-bold text-lg dark:text-white break-all truncate leading-tight">
              {event.graphql.operationName || 'Anonymous Operation'}
@@ -161,7 +177,7 @@ export const DetailPane: React.FC = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-gray-200 dark:border-gray-700">
+      <div className="flex border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
         {tabs.map(t => (
           <button
             key={t}
@@ -179,11 +195,11 @@ export const DetailPane: React.FC = () => {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto bg-gray-50 dark:bg-[#0d1117]">
+      <div className="flex-1 overflow-hidden bg-gray-50 dark:bg-[#1e1e1e] relative">
         {activeTab === 'request' && (
           <div className="h-full flex flex-col">
             {/* Actions Bar */}
-            <div className="p-2 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 flex flex-wrap gap-2">
+            <div className="p-2 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 flex flex-wrap gap-2 flex-shrink-0">
                <ActionButton 
                  icon={Copy} 
                  label="Copy Query" 
@@ -201,56 +217,82 @@ export const DetailPane: React.FC = () => {
                />
             </div>
 
-            <div className="p-2 bg-gray-100 dark:bg-gray-800 border-b dark:border-gray-700 text-xs font-mono text-gray-500 uppercase tracking-wide">
-               Variables
-            </div>
-            <div className="flex-1 border-b dark:border-gray-700 min-h-[100px] overflow-auto bg-white dark:bg-transparent">
-               <JsonView data={event.graphql.variables} />
-            </div>
-            <div className="p-2 bg-gray-100 dark:bg-gray-800 border-b border-t dark:border-gray-700 text-xs font-mono text-gray-500 uppercase tracking-wide">
-               Query
-            </div>
-            <div className="flex-[2] overflow-auto bg-white dark:bg-transparent">
-              <CodeBlock code={event.graphql.query || ''} />
+            <div className="flex-1 flex flex-col min-h-0">
+                <div className="flex-1 min-h-0 flex flex-col border-b border-gray-200 dark:border-gray-700">
+                    <div className="p-1 px-2 bg-gray-100 dark:bg-gray-800 border-b dark:border-gray-700 text-[10px] font-mono text-gray-500 uppercase tracking-wide flex-shrink-0">
+                        Variables
+                    </div>
+                    <div className="flex-1 min-h-0 relative">
+                        <div className="absolute inset-0">
+                            <JsonView data={event.graphql.variables} />
+                        </div>
+                    </div>
+                </div>
+                <div className="flex-[2] min-h-0 flex flex-col">
+                    <div className="p-1 px-2 bg-gray-100 dark:bg-gray-800 border-b dark:border-gray-700 text-[10px] font-mono text-gray-500 uppercase tracking-wide flex-shrink-0">
+                        Query
+                    </div>
+                    <div className="flex-1 min-h-0 relative">
+                        <div className="absolute inset-0">
+                             <CodeBlock code={event.graphql.query || ''} language="graphql" />
+                        </div>
+                    </div>
+                </div>
             </div>
           </div>
         )}
 
         {activeTab === 'response' && (
-           <div className="h-full flex flex-col">
-             <div className="p-2 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 flex gap-2 justify-end">
+           <div className="h-full flex flex-col relative group">
+             <div className="absolute top-4 right-6 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
                <ActionButton 
                  icon={Copy} 
                  label="Copy JSON" 
                  onClick={() => handleCopy(JSON.stringify(event.responseBodyJson, null, 2))} 
                />
              </div>
-             <JsonView data={event.responseBodyJson} />
+             <div className="flex-1 min-h-0 relative">
+                <div className="absolute inset-0">
+                    <JsonView data={event.responseBodyJson} />
+                </div>
+             </div>
            </div>
         )}
 
         {activeTab === 'raw' && (
-           <div className="h-full flex flex-col">
-             <div className="p-2 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 flex gap-2 justify-end">
+           <div className="h-full flex flex-col relative group">
+             <div className="absolute top-4 right-6 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
                <ActionButton 
                  icon={Copy} 
                  label="Copy Raw" 
                  onClick={() => handleCopy(event.responseBodyRaw || '')} 
                />
              </div>
-             <CodeBlock code={event.responseBodyRaw || ''} />
+             <div className="flex-1 min-h-0 relative">
+                <div className="absolute inset-0">
+                     <CodeBlock code={event.responseBodyRaw || ''} language="text" />
+                </div>
+             </div>
            </div>
         )}
 
         {activeTab === 'headers' && (
-          <div className="p-4 space-y-6">
-            <div>
-              <h3 className="text-xs font-bold uppercase text-gray-500 mb-2 border-b border-gray-200 dark:border-gray-700 pb-1">Request Headers</h3>
-              <JsonView data={event.requestHeaders} />
+          <div className="h-full overflow-auto">
+            <div className="h-1/2 flex flex-col border-b border-gray-700">
+              <h3 className="text-xs font-bold uppercase text-gray-500 p-2 bg-gray-100 dark:bg-gray-800 flex-shrink-0">Request Headers</h3>
+              <div className="flex-1 min-h-0 relative">
+                <div className="absolute inset-0">
+                     <JsonView data={event.requestHeaders} />
+                </div>
+              </div>
             </div>
-            <div>
-              <h3 className="text-xs font-bold uppercase text-gray-500 mb-2 border-b border-gray-200 dark:border-gray-700 pb-1">Response Headers</h3>
-              <JsonView data={event.responseHeaders} />
+            <div className="h-1/2 flex flex-col">
+              <h3 className="text-xs font-bold uppercase text-gray-500 p-2 bg-gray-100 dark:bg-gray-800 flex-shrink-0">Response Headers</h3>
+               <div className="flex-1 min-h-0 relative">
+                <div className="absolute inset-0">
+                    <JsonView data={event.responseHeaders} />
+                </div>
+              </div>
             </div>
           </div>
         )}

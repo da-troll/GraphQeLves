@@ -17,7 +17,7 @@ const App: React.FC = () => {
       {/* Header Bar */}
       <header className="h-10 flex items-center px-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 justify-between flex-shrink-0">
         <div className="flex items-center gap-2">
-          <h1 className="font-bold text-sm tracking-tight text-blue-600 dark:text-blue-400">GraphQeLves</h1>
+          <h1 className="font-bold text-sm tracking-tight text-[#ffa206]">GraphQeLves</h1>
         </div>
         <div className="flex items-center gap-2">
           <button 

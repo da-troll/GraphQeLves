@@ -10,14 +10,23 @@ export const safeJSONParse = (str: string | null) => {
 };
 
 export const determineOperationType = (body: any): OperationType => {
-  if (body?.operationName === 'IntrospectionQuery') return 'query'; // Handle specific cases
+  if (body?.operationName === 'IntrospectionQuery') return 'query'; 
   if (body?.query?.trim().startsWith('mutation')) return 'mutation';
   if (body?.query?.trim().startsWith('subscription')) return 'subscription';
   if (body?.extensions?.persistedQuery) return 'persisted';
   if (body?.query?.trim().startsWith('query')) return 'query';
+  
   // Default to query if we have a query string but no prefix
   if (typeof body?.query === 'string') return 'query';
+  
   return 'unknown';
+};
+
+// Helper to check if a single object looks like a GraphQL payload
+const isGraphQLObject = (item: any): boolean => {
+  if (!item || typeof item !== 'object') return false;
+  // Must have at least one standard GraphQL key
+  return 'query' in item || 'operationName' in item || 'extensions' in item;
 };
 
 export const parseGraphQLBody = (
@@ -32,7 +41,12 @@ export const parseGraphQLBody = (
 
     // Handle Batch (Array)
     if (Array.isArray(json)) {
-      return json.map((item) => ({
+      // STRICT FILTER: Filter out items that are not GraphQL (e.g., analytics events)
+      const validItems = json.filter(isGraphQLObject);
+      
+      if (validItems.length === 0) return null;
+
+      return validItems.map((item) => ({
         operationName: item.operationName || null,
         operationType: determineOperationType(item),
         query: item.query || null,
@@ -41,8 +55,8 @@ export const parseGraphQLBody = (
       }));
     }
 
-    // Handle Single
-    if (json.query || json.operationName || json.extensions) {
+    // Handle Single Object
+    if (isGraphQLObject(json)) {
       return [{
         operationName: json.operationName || null,
         operationType: determineOperationType(json),
@@ -54,19 +68,12 @@ export const parseGraphQLBody = (
   }
 
   // 2. Handle Multipart (Uploads)
-  // Spec: https://github.com/jaydenseric/graphql-multipart-request-spec
   if (postData.mimeType.includes('multipart/form-data')) {
     try {
-      // Very naive parser for the 'operations' field in multipart
-      // In a real HAR, text might be parsed differently depending on browser, 
-      // but usually `postData.text` contains the raw boundary data.
-      // This is complex to parse perfectly without a library, 
-      // but we look for the "operations" key.
-      
       const operationsMatch = postData.text.match(/name="operations"\r\n\r\n(.*)\r\n/);
       if (operationsMatch && operationsMatch[1]) {
         const json = safeJSONParse(operationsMatch[1]);
-        if (json) {
+        if (json && isGraphQLObject(json)) {
            return [{
             operationName: json.operationName || null,
             operationType: determineOperationType(json),
