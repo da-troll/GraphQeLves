@@ -3,7 +3,6 @@ import { Virtuoso } from 'react-virtuoso';
 import { useStore } from '../store';
 import { NetworkEvent } from '../types';
 import { clsx } from 'clsx';
-import { Filter } from 'lucide-react';
 
 const formatBytes = (bytes: number, decimals = 1) => {
   if (bytes === 0) return '0 B';
@@ -73,7 +72,7 @@ export const EventList: React.FC = () => {
     lastSelectedIdRef.current = event.id;
   };
 
-  const Row = (index: number, event: NetworkEvent) => {
+  const Row = (_index: number, event: NetworkEvent) => {
     const isSelected = selectedIds.has(event.id);
     
     return (

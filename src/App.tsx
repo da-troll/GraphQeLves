@@ -4,7 +4,7 @@ import { SplitPane } from './components/SplitPane';
 import { EventList } from './components/EventList';
 import { DetailPane } from './components/DetailPane';
 import { useStore } from './store';
-import { Loader2, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 
 const App: React.FC = () => {
   // Initialize listener

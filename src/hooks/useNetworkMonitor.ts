@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { useStore } from '../store';
 import { NetworkEvent } from '../types';
 import { parseGraphQLBody, safeJSONParse } from '../utils/parsing';
-import { v4 as uuidv4 } from 'uuid'; // We'll implement a simple uuid shim since we didn't add the package
 
 // Simple ID generator if uuid package isn't present, though it's standard to add it.
 // For now, simple random string to avoid install steps if not requested.
@@ -61,7 +60,7 @@ export const useNetworkMonitor = () => {
       if (!payloads || payloads.length === 0) return;
 
       // 3. Get Response Body (Async)
-      request.getContent((content: string, encoding: string) => {
+      request.getContent((content: string, _encoding: string) => {
         const responseJson = safeJSONParse(content);
         
         const headersToRecord = (headers: any[]) => 
