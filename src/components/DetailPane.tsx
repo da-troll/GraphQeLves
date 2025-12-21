@@ -7,12 +7,36 @@ import { createExportBundle, downloadBundle } from '../utils/export';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
+// Custom theme with more vibrant colors
+const vibrantTheme = {
+  ...vscDarkPlus,
+  'code[class*="language-"]': {
+    ...vscDarkPlus['code[class*="language-"]'],
+    background: '#151820',
+  },
+  'pre[class*="language-"]': {
+    ...vscDarkPlus['pre[class*="language-"]'],
+    background: '#151820',
+  },
+  'string': { color: '#98c379' },
+  'number': { color: '#d19a66' },
+  'boolean': { color: '#d19a66' },
+  'null': { color: '#d19a66' },
+  'keyword': { color: '#c678dd' },
+  'property': { color: '#61afef' },
+  'punctuation': { color: '#abb2bf' },
+  'operator': { color: '#56b6c2' },
+  'function': { color: '#61afef' },
+  'attr-name': { color: '#d19a66' },
+  'attr-value': { color: '#98c379' },
+};
+
 const JsonView = ({ data }: { data: any }) => (
   <div className="text-xs overflow-auto h-full">
     <SyntaxHighlighter
       language="json"
-      style={vscDarkPlus}
-      customStyle={{ margin: 0, height: '100%', fontSize: '11px', lineHeight: '1.5' }}
+      style={vibrantTheme}
+      customStyle={{ margin: 0, height: '100%', fontSize: '11px', lineHeight: '1.5', background: '#151820', padding: '12px' }}
       wrapLongLines={true}
     >
       {JSON.stringify(data, null, 2)}
@@ -24,8 +48,8 @@ const CodeBlock = ({ code, language = 'graphql' }: { code: string, language?: st
   <div className="text-xs overflow-auto h-full">
     <SyntaxHighlighter
       language={language}
-      style={vscDarkPlus}
-      customStyle={{ margin: 0, height: '100%', fontSize: '11px', lineHeight: '1.5' }}
+      style={vibrantTheme}
+      customStyle={{ margin: 0, height: '100%', fontSize: '11px', lineHeight: '1.5', background: '#151820', padding: '12px' }}
       wrapLongLines={true}
     >
       {code}
@@ -277,7 +301,14 @@ export const DetailPane: React.FC = () => {
         )}
 
         {activeTab === 'headers' && (
-          <div className="h-full overflow-auto">
+          <div className="h-full overflow-auto relative group">
+            <div className="absolute top-4 right-6 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+              <ActionButton
+                icon={Copy}
+                label="Copy Headers"
+                onClick={() => handleCopy(JSON.stringify({ request: event.requestHeaders, response: event.responseHeaders }, null, 2))}
+              />
+            </div>
             <div className="h-1/2 flex flex-col border-b border-gray-700">
               <h3 className="text-xs font-bold uppercase text-gray-500 p-2 bg-gray-100 dark:bg-gray-800 flex-shrink-0">Request Headers</h3>
               <div className="flex-1 min-h-0 relative">

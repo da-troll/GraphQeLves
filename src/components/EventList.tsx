@@ -3,6 +3,7 @@ import { Virtuoso } from 'react-virtuoso';
 import { useStore } from '../store';
 import { NetworkEvent } from '../types';
 import { clsx } from 'clsx';
+import { Eye, EyeOff } from 'lucide-react';
 
 const formatBytes = (bytes: number, decimals = 1) => {
   // Handle invalid, zero, or negative (cached) sizes
@@ -45,7 +46,13 @@ export const EventList: React.FC = () => {
   const filter = useStore((state) => state.filter);
   const setFilter = useStore((state) => state.setFilter);
   const searchQuery = useStore((state) => state.searchQuery);
-  
+  const columnVisibility = useStore((state) => state.columnVisibility);
+  const cycleColumnVisibility = useStore((state) => state.cycleColumnVisibility);
+
+  // Column visibility: 0 = both, 1 = time only, 2 = none, 3 = size only
+  const showSize = columnVisibility === 0 || columnVisibility === 3;
+  const showTime = columnVisibility === 0 || columnVisibility === 1;
+
   const lastSelectedIdRef = useRef<string | null>(null);
 
   // Filter Logic
@@ -111,14 +118,18 @@ export const EventList: React.FC = () => {
         </div>
 
         {/* Size */}
-        <div className="w-14 text-right text-gray-400 tabular-nums">
-          {formatBytes(event.responseSize)}
-        </div>
+        {showSize && (
+          <div className="w-14 text-right text-gray-400 tabular-nums">
+            {formatBytes(event.responseSize)}
+          </div>
+        )}
 
         {/* Time */}
-        <div className="w-14 text-right text-gray-400 tabular-nums ml-2">
-          {Math.round(event.duration)}ms
-        </div>
+        {showTime && (
+          <div className={clsx("w-14 text-right text-gray-400 tabular-nums", showSize && "ml-2")}>
+            {Math.round(event.duration)}ms
+          </div>
+        )}
       </div>
     );
   };
@@ -167,8 +178,17 @@ export const EventList: React.FC = () => {
            <FilterButton type="mutation" label="Mutation" />
            <FilterButton type="subscription" label="Sub" />
          </div>
-         <div className="text-[10px] text-gray-400 whitespace-nowrap px-1">
-           {selectedIds.size > 0 ? `${selectedIds.size} / ` : ''}{filteredEvents.length} events
+         <div className="flex items-center gap-2">
+           <button
+             onClick={cycleColumnVisibility}
+             className="p-1 rounded text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
+             title={`Columns: ${showSize ? 'Size' : ''}${showSize && showTime ? ' + ' : ''}${showTime ? 'Time' : ''}${!showSize && !showTime ? 'Hidden' : ''}`}
+           >
+             {showSize || showTime ? <Eye size={14} /> : <EyeOff size={14} />}
+           </button>
+           <div className="text-[10px] text-gray-400 whitespace-nowrap px-1">
+             {selectedIds.size > 0 ? `${selectedIds.size} / ` : ''}{filteredEvents.length} events
+           </div>
          </div>
       </div>
     </div>

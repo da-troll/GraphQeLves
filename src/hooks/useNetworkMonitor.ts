@@ -62,9 +62,30 @@ export const useNetworkMonitor = () => {
       // 3. Get Response Body (Async)
       request.getContent((content: string, _encoding: string) => {
         const responseJson = safeJSONParse(content);
-        
-        const headersToRecord = (headers: any[]) => 
+
+        const headersToRecord = (headers: any[]) =>
           headers.reduce((acc, h) => ({ ...acc, [h.name]: h.value }), {});
+
+        // Calculate response size - prefer bodySize, fallback to content length
+        const getResponseSize = (): number => {
+          // Try HAR bodySize first
+          if (request.response.bodySize > 0) {
+            return request.response.bodySize;
+          }
+          // Try content-length header
+          const contentLengthHeader = request.response.headers.find(
+            (h: any) => h.name.toLowerCase() === 'content-length'
+          );
+          if (contentLengthHeader) {
+            const parsed = parseInt(contentLengthHeader.value, 10);
+            if (!isNaN(parsed) && parsed > 0) return parsed;
+          }
+          // Fallback to actual content byte length
+          if (content) {
+            return new TextEncoder().encode(content).length;
+          }
+          return 0;
+        };
 
         // 4. Create Events (Handle Batching)
         payloads.forEach((payload, index) => {
@@ -75,15 +96,15 @@ export const useNetworkMonitor = () => {
             url: request.request.url,
             method: request.request.method,
             status: request.response.status,
-            
+
             requestHeaders: headersToRecord(request.request.headers),
             requestBodyRaw: request.request.postData?.text || null,
             graphql: payload,
-            
+
             responseHeaders: headersToRecord(request.response.headers),
             responseBodyRaw: content,
             responseBodyJson: responseJson,
-            responseSize: request.response.bodySize,
+            responseSize: getResponseSize(),
             duration: request.time,
 
             isBatched: payloads.length > 1,
