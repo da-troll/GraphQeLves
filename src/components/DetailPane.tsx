@@ -182,9 +182,9 @@ export const DetailPane: React.FC = () => {
            <h1 className="font-bold text-lg dark:text-white break-all truncate leading-tight">
              {event.graphql.operationName || 'Anonymous Operation'}
            </h1>
-           <div className="flex items-center gap-2 mt-1.5 text-xs text-gray-500">
+           <div className="flex items-center gap-2 mt-1.5 text-xs text-gray-500 dark:text-gray-400">
              <span className={`px-1.5 py-0.5 rounded font-bold uppercase ${
-               event.method === 'POST' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'
+               event.method === 'POST' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400'
              }`}>{event.method}</span>
              <span className="font-mono truncate">{event.url}</span>
            </div>
