@@ -34,9 +34,9 @@ html, body, #root {
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: #475569;
+  background: #374151;
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: #64748b;
+  background: #4b5563;
 }

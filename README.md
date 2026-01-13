@@ -1,20 +1,72 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# GraphQeLves
 
-# Run and deploy your AI Studio app
+A Chrome DevTools extension for inspecting and debugging GraphQL network requests.
 
-This contains everything you need to run your app locally.
+![Chrome DevTools](https://img.shields.io/badge/Chrome-DevTools-blue)<br>
+![Manifest V3](https://img.shields.io/badge/Manifest-V3-green)<br>
+![License MIT](https://img.shields.io/badge/License-MIT-yellow)
 
-View your app in AI Studio: https://ai.studio/apps/drive/1fcfy-LQBh51xsfWrRdEnz2aWpCNVhDEs
+## Features
 
-## Run Locally
+- **Real-time monitoring** — Captures GraphQL queries, mutations, and subscriptions as they happen
+- **Request inspection** — View operation names, variables, and full query text
+- **Response analysis** — Browse formatted JSON responses with syntax highlighting
+- **Network metrics** — Duration, response size, HTTP status codes
+- **Filtering & search** — Filter by operation type, search by name or URL
+- **Multi-select export** — Batch export selected requests as JSON with cURL commands
+- **Header inspection** — View request/response headers (sensitive values auto-redacted)
+- **Persisted query detection** — Identifies requests using Apollo-style persisted queries
 
-**Prerequisites:**  Node.js
+## Installation
 
+### From Source
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/da-troll/GraphQeLves.git
+   cd GraphQeLves
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Build the extension:
+   ```bash
+   npm run build
+   ```
+
+4. Load in Chrome:
+   - Navigate to `chrome://extensions/`
+   - Enable "Developer mode"
+   - Click "Load unpacked"
+   - Select the `dist/` folder
+
+## Keyboard Navigation
+
+Chrome doesn't allow extensions to register custom DevTools shortcuts, but you can quickly access GraphQeLves using the Command Menu:
+
+1. **Open DevTools:** `Ctrl+Shift+I` (Windows/Linux) or `Cmd+Opt+I` (Mac)
+2. **Open Command Menu:** `Ctrl+Shift+P` (Windows/Linux) or `Cmd+Shift+P` (Mac)
+3. **Type** `g` or `graph` and press **Enter** to jump to the GraphQeLves panel
+
+Alternatively, use `Ctrl+[` / `Ctrl+]` to cycle through DevTools panels.
+
+## Development
+
+```bash
+npm run dev       # Start dev server with hot reload
+npm run build     # Production build
+npm run preview   # Preview production build
+```
+
+When running `npm run dev` outside of Chrome DevTools, mock GraphQL events are generated for testing the UI.
+
+## Tech Stack
+
+- React 18 + TypeScript
+- Vite
+- Tailwind CSS
+- Zustand
+- react-virtuoso

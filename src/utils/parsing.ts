@@ -4,9 +4,22 @@ export const safeJSONParse = (str: string | null) => {
   if (!str) return null;
   try {
     return JSON.parse(str);
-  } catch (e) {
+  } catch {
     return null;
   }
+};
+
+// Extract operation name from query string when operationName field is missing
+// e.g., "query GetUser { ... }" -> "GetUser"
+const extractNameFromQuery = (query: string | null | undefined): string | null => {
+  if (!query) return null;
+  const match = query.match(/^[\s]*(query|mutation|subscription)\s+([A-Za-z_]\w*)/);
+  return match?.[2] ?? null;
+};
+
+// Get operation name: prefer explicit operationName, fallback to parsing query
+const getOperationName = (item: { operationName?: string; query?: string }): string | null => {
+  return item.operationName || extractNameFromQuery(item.query) || null;
 };
 
 export const determineOperationType = (body: any): OperationType => {
@@ -47,7 +60,7 @@ export const parseGraphQLBody = (
       if (validItems.length === 0) return null;
 
       return validItems.map((item) => ({
-        operationName: item.operationName || null,
+        operationName: getOperationName(item),
         operationType: determineOperationType(item),
         query: item.query || null,
         variables: item.variables || null,
@@ -58,7 +71,7 @@ export const parseGraphQLBody = (
     // Handle Single Object
     if (isGraphQLObject(json)) {
       return [{
-        operationName: json.operationName || null,
+        operationName: getOperationName(json),
         operationType: determineOperationType(json),
         query: json.query || null,
         variables: json.variables || null,
@@ -75,7 +88,7 @@ export const parseGraphQLBody = (
         const json = safeJSONParse(operationsMatch[1]);
         if (json && isGraphQLObject(json)) {
            return [{
-            operationName: json.operationName || null,
+            operationName: getOperationName(json),
             operationType: determineOperationType(json),
             query: json.query || null,
             variables: json.variables || null,
