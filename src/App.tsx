@@ -1,16 +1,27 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNetworkMonitor } from './hooks/useNetworkMonitor';
 import { SplitPane } from './components/SplitPane';
 import { EventList } from './components/EventList';
 import { DetailPane } from './components/DetailPane';
 import { useStore } from './store';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Sun, Moon } from 'lucide-react';
 
 const App: React.FC = () => {
   // Initialize listener
   useNetworkMonitor();
-  
+
   const clearEvents = useStore((state) => state.clearEvents);
+
+  // Theme state - default to dark, persist in localStorage
+  const [isDark, setIsDark] = useState(() => {
+    const stored = localStorage.getItem('graphqelves-theme');
+    return stored ? stored === 'dark' : true; // Default to dark
+  });
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', isDark);
+    localStorage.setItem('graphqelves-theme', isDark ? 'dark' : 'light');
+  }, [isDark]);
 
   return (
     <div className="flex flex-col h-screen w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
@@ -20,7 +31,14 @@ const App: React.FC = () => {
           <h1 className="font-bold text-sm tracking-tight text-[#ffa206]">GraphQeLves</h1>
         </div>
         <div className="flex items-center gap-2">
-          <button 
+          <button
+            onClick={() => setIsDark(!isDark)}
+            className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-800 rounded text-gray-600 dark:text-gray-400"
+            title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          >
+            {isDark ? <Sun size={14} /> : <Moon size={14} />}
+          </button>
+          <button
             onClick={clearEvents}
             className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-800 rounded text-gray-600 dark:text-gray-400"
             title="Clear All"
