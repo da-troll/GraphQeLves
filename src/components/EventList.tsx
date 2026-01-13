@@ -134,33 +134,51 @@ export const EventList: React.FC = () => {
     );
   };
 
-  const FilterButton = ({ type, label }: { type: typeof filter, label: string }) => (
-    <button
-      onClick={() => setFilter(type)}
-      className={clsx(
-        "px-2 py-1 rounded text-[10px] font-medium uppercase transition-colors border",
-        filter === type 
-          ? "bg-gray-200 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100" 
-          : "border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-      )}
-    >
-      {label}
-    </button>
-  );
+  const FilterButton = ({ type, label }: { type: typeof filter, label: string }) => {
+    const activeColors: Record<string, string> = {
+      all: 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100',
+      query: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400',
+      mutation: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400',
+      subscription: 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400',
+      persisted: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400',
+    };
+
+    return (
+      <button
+        onClick={() => setFilter(type)}
+        className={clsx(
+          "px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide transition-colors",
+          filter === type
+            ? activeColors[type]
+            : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+        )}
+      >
+        {label}
+      </button>
+    );
+  };
 
   return (
     <div className="h-full flex flex-col">
       {/* Top Search Bar */}
       <div className="p-2 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 flex gap-2">
-        <input 
-          type="text" 
-          placeholder="Filter events..." 
+        <input
+          type="text"
+          placeholder="Filter events..."
           className="flex-1 bg-gray-100 dark:bg-gray-800 text-xs px-2 py-1.5 rounded border-none focus:ring-1 focus:ring-blue-500 dark:text-gray-200 outline-none"
           value={searchQuery}
           onChange={(e) => useStore.getState().setSearchQuery(e.target.value)}
         />
       </div>
-      
+
+      {/* Filter Buttons */}
+      <div className="flex-shrink-0 px-2 py-1.5 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 flex gap-1 overflow-x-auto">
+        <FilterButton type="all" label="All" />
+        <FilterButton type="query" label="Query" />
+        <FilterButton type="mutation" label="Mutation" />
+        <FilterButton type="subscription" label="Sub" />
+      </div>
+
       {/* Virtual List */}
       <div className="flex-1 bg-white dark:bg-gray-900">
         <Virtuoso
@@ -170,25 +188,17 @@ export const EventList: React.FC = () => {
         />
       </div>
 
-      {/* Bottom Filter Toggles & Stats */}
-      <div className="flex-shrink-0 p-1.5 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 flex items-center justify-between gap-2 overflow-x-auto">
-         <div className="flex gap-1">
-           <FilterButton type="all" label="All" />
-           <FilterButton type="query" label="Query" />
-           <FilterButton type="mutation" label="Mutation" />
-           <FilterButton type="subscription" label="Sub" />
-         </div>
-         <div className="flex items-center gap-2">
-           <button
-             onClick={cycleColumnVisibility}
-             className="p-1 rounded text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
-             title={`Columns: ${showSize ? 'Size' : ''}${showSize && showTime ? ' + ' : ''}${showTime ? 'Time' : ''}${!showSize && !showTime ? 'Hidden' : ''}`}
-           >
-             {showSize || showTime ? <Eye size={14} /> : <EyeOff size={14} />}
-           </button>
-           <div className="text-[10px] text-gray-400 whitespace-nowrap px-1">
-             {selectedIds.size > 0 ? `${selectedIds.size} / ` : ''}{filteredEvents.length} events
-           </div>
+      {/* Bottom Stats */}
+      <div className="flex-shrink-0 p-1.5 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 flex items-center justify-end gap-2">
+         <button
+           onClick={cycleColumnVisibility}
+           className="p-1 rounded text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
+           title={`Columns: ${showSize ? 'Size' : ''}${showSize && showTime ? ' + ' : ''}${showTime ? 'Time' : ''}${!showSize && !showTime ? 'Hidden' : ''}`}
+         >
+           {showSize || showTime ? <Eye size={14} /> : <EyeOff size={14} />}
+         </button>
+         <div className="text-[10px] text-gray-400 whitespace-nowrap px-1">
+           {selectedIds.size > 0 ? `${selectedIds.size} / ` : ''}{filteredEvents.length} events
          </div>
       </div>
     </div>
