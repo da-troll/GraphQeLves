@@ -171,12 +171,26 @@ export const EventList: React.FC = () => {
         />
       </div>
 
-      {/* Filter Buttons */}
-      <div className="flex-shrink-0 px-2 py-1.5 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 flex gap-1 overflow-x-auto">
-        <FilterButton type="all" label="All" />
-        <FilterButton type="query" label="Query" />
-        <FilterButton type="mutation" label="Mutation" />
-        <FilterButton type="subscription" label="Sub" />
+      {/* Filter Buttons & Stats */}
+      <div className="flex-shrink-0 px-2 py-1.5 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 flex items-center justify-between gap-2 overflow-x-auto">
+        <div className="flex gap-1">
+          <FilterButton type="all" label="All" />
+          <FilterButton type="query" label="Query" />
+          <FilterButton type="mutation" label="Mutation" />
+          <FilterButton type="subscription" label="Sub" />
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={cycleColumnVisibility}
+            className="p-1 rounded text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
+            title={`Columns: ${showSize ? 'Size' : ''}${showSize && showTime ? ' + ' : ''}${showTime ? 'Time' : ''}${!showSize && !showTime ? 'Hidden' : ''}`}
+          >
+            {showSize || showTime ? <Eye size={14} /> : <EyeOff size={14} />}
+          </button>
+          <div className="text-[10px] text-gray-400 whitespace-nowrap">
+            {selectedIds.size > 0 ? `${selectedIds.size} / ` : ''}{filteredEvents.length} events
+          </div>
+        </div>
       </div>
 
       {/* Virtual List */}
@@ -186,20 +200,6 @@ export const EventList: React.FC = () => {
           itemContent={Row}
           className="no-scrollbar"
         />
-      </div>
-
-      {/* Bottom Stats */}
-      <div className="flex-shrink-0 p-1.5 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 flex items-center justify-end gap-2">
-         <button
-           onClick={cycleColumnVisibility}
-           className="p-1 rounded text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
-           title={`Columns: ${showSize ? 'Size' : ''}${showSize && showTime ? ' + ' : ''}${showTime ? 'Time' : ''}${!showSize && !showTime ? 'Hidden' : ''}`}
-         >
-           {showSize || showTime ? <Eye size={14} /> : <EyeOff size={14} />}
-         </button>
-         <div className="text-[10px] text-gray-400 whitespace-nowrap px-1">
-           {selectedIds.size > 0 ? `${selectedIds.size} / ` : ''}{filteredEvents.length} events
-         </div>
       </div>
     </div>
   );
