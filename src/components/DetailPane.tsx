@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useStore } from '../store';
 import { clsx } from 'clsx';
 import { Copy, Download, Check } from 'lucide-react';
@@ -7,8 +7,30 @@ import { createExportBundle, downloadBundle } from '../utils/export';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
-// Custom theme with more vibrant colors
-const vibrantTheme = {
+// Hook to detect dark mode
+const useDarkMode = () => {
+  const [isDark, setIsDark] = useState(() =>
+    document.documentElement.classList.contains('dark')
+  );
+
+  useEffect(() => {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'class') {
+          setIsDark(document.documentElement.classList.contains('dark'));
+        }
+      });
+    });
+
+    observer.observe(document.documentElement, { attributes: true });
+    return () => observer.disconnect();
+  }, []);
+
+  return isDark;
+};
+
+// Dark theme with vibrant colors
+const darkTheme = {
   ...vscDarkPlus,
   'code[class*="language-"]': {
     ...vscDarkPlus['code[class*="language-"]'],
@@ -31,31 +53,69 @@ const vibrantTheme = {
   'attr-value': { color: '#98c379' },
 };
 
-const JsonView = ({ data }: { data: any }) => (
-  <div className="text-xs overflow-auto h-full">
-    <SyntaxHighlighter
-      language="json"
-      style={vibrantTheme}
-      customStyle={{ margin: 0, height: '100%', fontSize: '11px', lineHeight: '1.5', background: '#151820', padding: '12px' }}
-      wrapLongLines={true}
-    >
-      {JSON.stringify(data, null, 2)}
-    </SyntaxHighlighter>
-  </div>
-);
+// Light theme
+const lightTheme = {
+  'code[class*="language-"]': {
+    color: '#383a42',
+    background: '#fafbfc',
+    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+  },
+  'pre[class*="language-"]': {
+    color: '#383a42',
+    background: '#fafbfc',
+    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+  },
+  'string': { color: '#50a14f' },
+  'number': { color: '#986801' },
+  'boolean': { color: '#986801' },
+  'null': { color: '#986801' },
+  'keyword': { color: '#a626a4' },
+  'property': { color: '#4078f2' },
+  'punctuation': { color: '#383a42' },
+  'operator': { color: '#0184bc' },
+  'function': { color: '#4078f2' },
+  'attr-name': { color: '#986801' },
+  'attr-value': { color: '#50a14f' },
+  'comment': { color: '#a0a1a7', fontStyle: 'italic' },
+};
 
-const CodeBlock = ({ code, language = 'graphql' }: { code: string, language?: string }) => (
-  <div className="text-xs overflow-auto h-full">
-    <SyntaxHighlighter
-      language={language}
-      style={vibrantTheme}
-      customStyle={{ margin: 0, height: '100%', fontSize: '11px', lineHeight: '1.5', background: '#151820', padding: '12px' }}
-      wrapLongLines={true}
-    >
-      {code}
-    </SyntaxHighlighter>
-  </div>
-);
+const JsonView = ({ data }: { data: any }) => {
+  const isDark = useDarkMode();
+  const theme = isDark ? darkTheme : lightTheme;
+  const bgColor = isDark ? '#151820' : '#fafbfc';
+
+  return (
+    <div className="text-xs overflow-auto h-full">
+      <SyntaxHighlighter
+        language="json"
+        style={theme}
+        customStyle={{ margin: 0, height: '100%', fontSize: '11px', lineHeight: '1.5', background: bgColor, padding: '12px' }}
+        wrapLongLines={true}
+      >
+        {JSON.stringify(data, null, 2)}
+      </SyntaxHighlighter>
+    </div>
+  );
+};
+
+const CodeBlock = ({ code, language = 'graphql' }: { code: string, language?: string }) => {
+  const isDark = useDarkMode();
+  const theme = isDark ? darkTheme : lightTheme;
+  const bgColor = isDark ? '#151820' : '#fafbfc';
+
+  return (
+    <div className="text-xs overflow-auto h-full">
+      <SyntaxHighlighter
+        language={language}
+        style={theme}
+        customStyle={{ margin: 0, height: '100%', fontSize: '11px', lineHeight: '1.5', background: bgColor, padding: '12px' }}
+        wrapLongLines={true}
+      >
+        {code}
+      </SyntaxHighlighter>
+    </div>
+  );
+};
 
 const ActionButton = ({ onClick, label, icon: Icon }: { onClick: () => Promise<void> | void, label: string, icon: any }) => {
   const [copied, setCopied] = useState(false);
@@ -219,7 +279,7 @@ export const DetailPane: React.FC = () => {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-hidden bg-gray-50 dark:bg-[#1e1e1e] relative">
+      <div className="flex-1 overflow-hidden bg-[#fafbfc] dark:bg-[#1e1e1e] relative">
         {activeTab === 'request' && (
           <div className="h-full flex flex-col">
             {/* Actions Bar */}
