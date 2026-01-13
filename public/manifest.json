@@ -1,8 +1,10 @@
 {
   "manifest_version": 3,
   "name": "GraphQeLves",
-  "version": "1.0",
-  "description": "A GraphQL network inspector with multi-select and bundled exports.",
+  "version": "1.0.0",
+  "version_name": "1.0.0",
+  "description": "A GraphQL network inspector for Chrome DevTools with real-time monitoring, syntax highlighting, and batch export.",
+  "homepage_url": "https://github.com/da-troll/GraphQeLves",
   "permissions": [
     "storage",
     "clipboardWrite"
