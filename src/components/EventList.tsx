@@ -31,9 +31,12 @@ const OperationBadge = ({ type }: { type: string }) => {
     unknown: 'text-gray-700 bg-gray-100 dark:bg-gray-800 dark:text-gray-400'
   };
 
+  // Abbreviate subscription to "sub" for space efficiency
+  const label = type === 'subscription' ? 'sub' : type;
+
   return (
-    <span className={clsx("px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide", colors[type] || colors.unknown)}>
-      {type.slice(0, 4)}
+    <span className={clsx("px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide whitespace-nowrap", colors[type] || colors.unknown)}>
+      {label}
     </span>
   );
 };
@@ -108,7 +111,7 @@ export const EventList: React.FC = () => {
         </div>
 
         {/* Type Badge */}
-        <div className="w-14 flex-shrink-0">
+        <div className="w-20 flex-shrink-0">
           <OperationBadge type={event.graphql.operationType} />
         </div>
 
