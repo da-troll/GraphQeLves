@@ -101,8 +101,8 @@ Capture these screenshots at 1280x800 resolution:
 
 **Support URL:** https://github.com/da-troll/GraphQeLves/issues
 
-**Privacy Policy URL:** Host PRIVACY_POLICY.md on GitHub Pages or link to raw GitHub file:
-https://github.com/da-troll/GraphQeLves/blob/main/PRIVACY_POLICY.md
+**Privacy Policy URL:**
+https://trollefsen.com/graphqelves/privacy-policy.html
 
 **Regions:** All regions
 
