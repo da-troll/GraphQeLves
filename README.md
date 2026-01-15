@@ -6,6 +6,26 @@ A Chrome DevTools extension for inspecting and debugging GraphQL network request
 ![Manifest V3](https://img.shields.io/badge/Manifest-V3-green)<br>
 ![License MIT](https://img.shields.io/badge/License-MIT-yellow)
 
+<!-- TODO: Uncomment when published to Chrome Web Store
+[![Chrome Web Store](https://img.shields.io/chrome-web-store/v/YOUR_EXTENSION_ID)](https://chrome.google.com/webstore/detail/graphqelves/YOUR_EXTENSION_ID)
+-->
+
+![GraphQeLves Screenshot](store-assets/01-dark-request-tab.png)
+
+## Installation
+
+### Chrome Web Store (Recommended)
+
+<!-- TODO: Update with actual Chrome Web Store link when published
+Install directly from the [Chrome Web Store](https://chrome.google.com/webstore/detail/graphqelves/YOUR_EXTENSION_ID).
+-->
+
+*Coming soon to the Chrome Web Store!*
+
+### From Source
+
+See [Development Installation](#development-installation) below.
+
 ## Features
 
 - **Real-time monitoring** — Captures GraphQL queries, mutations, and subscriptions as they happen
@@ -17,31 +37,16 @@ A Chrome DevTools extension for inspecting and debugging GraphQL network request
 - **Header inspection** — View request/response headers (sensitive values auto-redacted)
 - **Persisted query detection** — Identifies requests using Apollo-style persisted queries
 
-## Installation
+## Usage
 
-### From Source
+1. Open Chrome DevTools (`Ctrl+Shift+I` / `Cmd+Opt+I`)
+2. Navigate to the **GraphQeLves** panel
+3. Browse any website that makes GraphQL requests
+4. Click on a request to inspect details
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/da-troll/GraphQeLves.git
-   cd GraphQeLves
-   ```
+### Multi-Select Export
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Build the extension:
-   ```bash
-   npm run build
-   ```
-
-4. Load in Chrome:
-   - Navigate to `chrome://extensions/`
-   - Enable "Developer mode"
-   - Click "Load unpacked"
-   - Select the `dist/` folder
+Select multiple requests using `Shift+Click` (range) or `Cmd/Ctrl+Click` (individual) to export them as a JSON bundle with cURL commands included.
 
 ## Keyboard Navigation
 
@@ -70,3 +75,35 @@ When running `npm run dev` outside of Chrome DevTools, mock GraphQL events are g
 - Tailwind CSS
 - Zustand
 - react-virtuoso
+
+## Development Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/da-troll/GraphQeLves.git
+   cd GraphQeLves
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Build the extension:
+   ```bash
+   npm run build
+   ```
+
+4. Load in Chrome:
+   - Navigate to `chrome://extensions/`
+   - Enable "Developer mode"
+   - Click "Load unpacked"
+   - Select the `dist/` folder
+
+## Privacy
+
+GraphQeLves operates entirely locally within your browser. No data is collected, transmitted, or stored externally. See [PRIVACY_POLICY.md](PRIVACY_POLICY.md) for details.
+
+## License
+
+MIT
