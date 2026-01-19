@@ -6,7 +6,6 @@
   "description": "A GraphQL network inspector for Chrome DevTools with real-time monitoring, syntax highlighting, and batch export.",
   "homepage_url": "https://github.com/da-troll/GraphQeLves",
   "permissions": [
-    "storage",
     "clipboardWrite"
   ],
   "icons": {
