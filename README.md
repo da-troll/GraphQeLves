@@ -4,7 +4,7 @@ A Chrome DevTools extension for inspecting and debugging GraphQL network request
 
 ![Chrome DevTools](https://img.shields.io/badge/Chrome-DevTools-blue)<br>
 ![Manifest V3](https://img.shields.io/badge/Manifest-V3-green)<br>
-![License MIT](https://img.shields.io/badge/License-MIT-yellow)
+![License Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue)
 
 <!-- TODO: Uncomment when published to Chrome Web Store
 [![Chrome Web Store](https://img.shields.io/chrome-web-store/v/YOUR_EXTENSION_ID)](https://chrome.google.com/webstore/detail/graphqlves/YOUR_EXTENSION_ID)
@@ -106,4 +106,4 @@ GraphQLves operates entirely locally within your browser. No data is collected, 
 
 ## License
 
-MIT
+Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE).
